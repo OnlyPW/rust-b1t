@@ -652,7 +652,7 @@ impl ExtendedPrivKey {
         }
 
         let network = if data[0..4] == [0x04u8, 0x88, 0xAD, 0xE4] {
-            Network::Pepecoin
+            Network::B1t
         } else if data[0..4] == [0x04u8, 0x35, 0x83, 0x94] {
             Network::Testnet
         } else {
@@ -680,7 +680,7 @@ impl ExtendedPrivKey {
         let mut ret = [0; 78];
         ret[0..4].copy_from_slice(
             &match self.network {
-                Network::Pepecoin => [0x04, 0x88, 0xAD, 0xE4],
+                Network::B1t => [0x04, 0x88, 0xAD, 0xE4],
                 Network::Testnet | Network::Signet | Network::Regtest => [0x04, 0x35, 0x83, 0x94],
             }[..],
         );
@@ -795,7 +795,7 @@ impl ExtendedPubKey {
 
         Ok(ExtendedPubKey {
             network: if data[0..4] == [0x04u8, 0x88, 0xB2, 0x1E] {
-                Network::Pepecoin
+                Network::B1t
             } else if data[0..4] == [0x04u8, 0x35, 0x87, 0xCF] {
                 Network::Testnet
             } else {
@@ -820,7 +820,7 @@ impl ExtendedPubKey {
         let mut ret = [0; 78];
         ret[0..4].copy_from_slice(
             &match self.network {
-                Network::Pepecoin => [0x04u8, 0x88, 0xB2, 0x1E],
+                Network::B1t => [0x04u8, 0x88, 0xB2, 0x1E],
                 Network::Testnet | Network::Signet | Network::Regtest => [0x04u8, 0x35, 0x87, 0xCF],
             }[..],
         );
@@ -1222,7 +1222,7 @@ mod tests {
         }
 
         let xpriv = ExtendedPrivKey {
-            network: Network::Pepecoin,
+            network: Network::B1t,
             depth: 0,
             parent_fingerprint: Default::default(),
             child_number: ChildNumber::Normal { index: 0 },

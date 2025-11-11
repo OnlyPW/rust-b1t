@@ -17,7 +17,7 @@
 //! let public_key = PublicKey::new(s.generate_keypair(&mut rand::thread_rng()).1);
 //!
 //! // Generate pay-to-pubkey-hash address.
-//! let address = Address::p2pkh(&public_key, Network::Pepecoin);
+//! let address = Address::p2pkh(&public_key, Network::B1t);
 //! # }
 //! ```
 //!
@@ -684,15 +684,15 @@ impl NetworkValidation for NetworkUnchecked {
 ///
 /// // variant 1
 /// let address: Address<NetworkUnchecked> = "32iVBEu4dxkUQk9dJbZUiBiQdmypcEyJRf".parse().unwrap();
-/// let address: Address<NetworkChecked> = address.require_network(Network::Pepecoin).unwrap();
+/// let address: Address<NetworkChecked> = address.require_network(Network::B1t).unwrap();
 ///
 /// // variant 2
 /// let address: Address = Address::from_str("32iVBEu4dxkUQk9dJbZUiBiQdmypcEyJRf").unwrap()
-///                .require_network(Network::Pepecoin).unwrap();
+///                .require_network(Network::B1t).unwrap();
 ///
 /// // variant 3
 /// let address: Address<NetworkChecked> = "32iVBEu4dxkUQk9dJbZUiBiQdmypcEyJRf".parse::<Address<_>>()
-///                .unwrap().require_network(Network::Pepecoin).unwrap();
+///                .unwrap().require_network(Network::B1t).unwrap();
 /// ```
 ///
 /// ### Formatting addresses
@@ -820,15 +820,15 @@ impl<V: NetworkValidation> Address<V> {
     /// Format the address for the usage by `Debug` and `Display` implementations.
     fn fmt_internal(&self, fmt: &mut fmt::Formatter) -> fmt::Result {
         let p2pkh_prefix = match self.network {
-            Network::Pepecoin => PUBKEY_ADDRESS_PREFIX_MAIN,
+            Network::B1t => PUBKEY_ADDRESS_PREFIX_MAIN,
             Network::Testnet | Network::Signet | Network::Regtest => PUBKEY_ADDRESS_PREFIX_TEST,
         };
         let p2sh_prefix = match self.network {
-            Network::Pepecoin => SCRIPT_ADDRESS_PREFIX_MAIN,
+            Network::B1t => SCRIPT_ADDRESS_PREFIX_MAIN,
             Network::Testnet | Network::Signet | Network::Regtest => SCRIPT_ADDRESS_PREFIX_TEST,
         };
         let bech32_hrp = match self.network {
-            Network::Pepecoin => "bc",
+            Network::B1t => "bc",
             Network::Testnet | Network::Signet => "tb",
             Network::Regtest => "bcrt",
         };
@@ -1044,10 +1044,10 @@ impl Address<NetworkUnchecked> {
     /// assert!(address.is_valid_for_network(Network::Regtest));
     /// assert!(address.is_valid_for_network(Network::Signet));
     ///
-    /// assert_eq!(address.is_valid_for_network(Network::Pepecoin), false);
+    /// assert_eq!(address.is_valid_for_network(Network::B1t), false);
     ///
     /// let address: Address<NetworkUnchecked> = "32iVBEu4dxkUQk9dJbZUiBiQdmypcEyJRf".parse().unwrap();
-    /// assert!(address.is_valid_for_network(Network::Pepecoin));
+    /// assert!(address.is_valid_for_network(Network::B1t));
     /// assert_eq!(address.is_valid_for_network(Network::Testnet), false);
     /// ```
     pub fn is_valid_for_network(&self, network: Network) -> bool {
@@ -1058,7 +1058,7 @@ impl Address<NetworkUnchecked> {
 
         match (self.network, network) {
             (a, b) if a == b => true,
-            (Network::Pepecoin, _) | (_, Network::Pepecoin) => false,
+            (Network::B1t, _) | (_, Network::B1t) => false,
             (Network::Regtest, _) | (_, Network::Regtest) if !is_legacy => false,
             (Network::Testnet, _) | (Network::Regtest, _) | (Network::Signet, _) => true,
         }
@@ -1146,7 +1146,7 @@ impl FromStr for Address<NetworkUnchecked> {
         // try bech32
         let bech32_network = match find_bech32_prefix(s) {
             // note that upper or lowercase is allowed but NOT mixed case
-            "bc" | "BC" => Some(Network::Pepecoin),
+            "bc" | "BC" => Some(Network::B1t),
             "tb" | "TB" => Some(Network::Testnet), // this may also be signet
             "bcrt" | "BCRT" => Some(Network::Regtest),
             _ => None,
@@ -1186,11 +1186,11 @@ impl FromStr for Address<NetworkUnchecked> {
 
         let (network, payload) = match data[0] {
             PUBKEY_ADDRESS_PREFIX_MAIN => (
-                Network::Pepecoin,
+                Network::B1t,
                 Payload::PubkeyHash(PubkeyHash::from_slice(&data[1..]).unwrap()),
             ),
             SCRIPT_ADDRESS_PREFIX_MAIN => (
-                Network::Pepecoin,
+                Network::B1t,
                 Payload::ScriptHash(ScriptHash::from_slice(&data[1..]).unwrap()),
             ),
             PUBKEY_ADDRESS_PREFIX_TEST => {
@@ -1423,7 +1423,7 @@ mod tests {
         for (address, expected_type) in &addresses {
             let addr = Address::from_str(address)
                 .unwrap()
-                .require_network(Network::Pepecoin)
+                .require_network(Network::B1t)
                 .expect("mainnet");
             assert_eq!(&addr.address_type(), expected_type);
         }
@@ -1594,7 +1594,7 @@ mod tests {
             ["132F25rTsvBdp9JzLLBHP5mvGY66i1xdiM", "33iFwdLuRpW1uK1RTRqsoi8rR4NpDzk66k"].iter()
         {
             let addr =
-                Address::from_str(el).unwrap().require_network(Network::Pepecoin).expect("mainnet");
+                Address::from_str(el).unwrap().require_network(Network::B1t).expect("mainnet");
             assert_eq!(addr.to_qr_uri(), format!("bitcoin:{}", el));
         }
 
@@ -1628,9 +1628,9 @@ mod tests {
             .collect::<Vec<_>>();
 
         const LEGACY_EQUIVALENCE_CLASSES: &[&[Network]] =
-            &[&[Network::Pepecoin], &[Network::Testnet, Network::Regtest, Network::Signet]];
+            &[&[Network::B1t], &[Network::Testnet, Network::Regtest, Network::Signet]];
         const SEGWIT_EQUIVALENCE_CLASSES: &[&[Network]] =
-            &[&[Network::Pepecoin], &[Network::Regtest], &[Network::Testnet, Network::Signet]];
+            &[&[Network::B1t], &[Network::Regtest], &[Network::Testnet, Network::Signet]];
 
         fn test_addr_type(payloads: &[Payload], equivalence_classes: &[&[Network]]) {
             for pl in payloads {
@@ -1668,7 +1668,7 @@ mod tests {
         )
         .unwrap();
         let secp = Secp256k1::verification_only();
-        let address = Address::p2tr(&secp, internal_key, None, Network::Pepecoin);
+        let address = Address::p2tr(&secp, internal_key, None, Network::B1t);
         assert_eq!(
             address.to_string(),
             "bc1p5cyxnuxmeuwuvkwfem96lqzszd02n6xdcjrs20cac6yqjjwudpxqkedrcr"
@@ -1682,7 +1682,7 @@ mod tests {
         let address_string = "bc1qhvd6suvqzjcu9pxjhrwhtrlj85ny3n2mqql5w4";
         let address = Address::from_str(address_string)
             .expect("address")
-            .require_network(Network::Pepecoin)
+            .require_network(Network::B1t)
             .expect("mainnet");
 
         let pubkey_string = "0347ff3dacd07a1f43805ec6808e801505a6e18245178609972a68afbc2777ff2b";
@@ -1703,7 +1703,7 @@ mod tests {
         let address_string = "3EZQk4F8GURH5sqVMLTFisD17yNeKa7Dfs";
         let address = Address::from_str(address_string)
             .expect("address")
-            .require_network(Network::Pepecoin)
+            .require_network(Network::B1t)
             .expect("mainnet");
 
         let pubkey_string = "0347ff3dacd07a1f43805ec6808e801505a6e18245178609972a68afbc2777ff2b";
@@ -1724,7 +1724,7 @@ mod tests {
         let address_string = "1J4LVanjHMu3JkXbVrahNuQCTGCRRgfWWx";
         let address = Address::from_str(address_string)
             .expect("address")
-            .require_network(Network::Pepecoin)
+            .require_network(Network::B1t)
             .expect("mainnet");
 
         let pubkey_string = "0347ff3dacd07a1f43805ec6808e801505a6e18245178609972a68afbc2777ff2b";
@@ -1767,13 +1767,13 @@ mod tests {
         let pubkey = PublicKey::from_str(pubkey_string).expect("pubkey");
         let xonly_pubkey = XOnlyPublicKey::from(pubkey.inner);
         let tweaked_pubkey = TweakedPublicKey::dangerous_assume_tweaked(xonly_pubkey);
-        let address = Address::p2tr_tweaked(tweaked_pubkey, Network::Pepecoin);
+        let address = Address::p2tr_tweaked(tweaked_pubkey, Network::B1t);
 
         assert_eq!(
             address,
             Address::from_str("bc1pgllnmtxs0g058qz7c6qgaqq4qknwrqj9z7rqn9e2dzhmcfmhlu4sfadf5e")
                 .expect("address")
-                .require_network(Network::Pepecoin)
+                .require_network(Network::B1t)
                 .expect("mainnet")
         );
 
@@ -1793,13 +1793,13 @@ mod tests {
         let pubkey = PublicKey::from_str(pubkey_string).expect("pubkey");
         let xonly_pubkey = XOnlyPublicKey::from(pubkey.inner);
         let tweaked_pubkey = TweakedPublicKey::dangerous_assume_tweaked(xonly_pubkey);
-        let address = Address::p2tr_tweaked(tweaked_pubkey, Network::Pepecoin);
+        let address = Address::p2tr_tweaked(tweaked_pubkey, Network::B1t);
 
         assert_eq!(
             address,
             Address::from_str("bc1pgllnmtxs0g058qz7c6qgaqq4qknwrqj9z7rqn9e2dzhmcfmhlu4sfadf5e")
                 .expect("address")
-                .require_network(Network::Pepecoin)
+                .require_network(Network::B1t)
                 .expect("mainnet")
         );
 
@@ -1818,10 +1818,10 @@ mod tests {
             ScriptBuf::from_hex("001161458e330389cd0437ee9fe3641d70cc18").unwrap();
         let expected = Err(Error::UnrecognizedScript);
 
-        assert_eq!(Address::from_script(&bad_p2wpkh, Network::Pepecoin), expected);
-        assert_eq!(Address::from_script(&bad_p2wsh, Network::Pepecoin), expected);
+        assert_eq!(Address::from_script(&bad_p2wpkh, Network::B1t), expected);
+        assert_eq!(Address::from_script(&bad_p2wsh, Network::B1t), expected);
         assert_eq!(
-            Address::from_script(&invalid_segwitv0_script, Network::Pepecoin),
+            Address::from_script(&invalid_segwitv0_script, Network::B1t),
             Err(Error::InvalidSegwitV0ProgramLength(17))
         );
     }
@@ -1852,10 +1852,10 @@ mod tests {
             "bc1pgllnmtxs0g058qz7c6qgaqq4qknwrqj9z7rqn9e2dzhmcfmhlu4sfadf5e",
         ];
         for addr in &addresses {
-            let addr = Address::from_str(addr).unwrap().require_network(Network::Pepecoin).unwrap();
+            let addr = Address::from_str(addr).unwrap().require_network(Network::B1t).unwrap();
             for another in &addresses {
                 let another =
-                    Address::from_str(another).unwrap().require_network(Network::Pepecoin).unwrap();
+                    Address::from_str(another).unwrap().require_network(Network::B1t).unwrap();
                 assert_eq!(addr.matches_script_pubkey(&another.script_pubkey()), addr == another);
             }
         }

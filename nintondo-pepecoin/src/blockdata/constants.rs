@@ -40,14 +40,14 @@ pub const MIN_TRANSACTION_WEIGHT: u32 = 4 * 60;
 pub const WITNESS_SCALE_FACTOR: usize = 4;
 /// The maximum allowed number of signature check operations in a block.
 pub const MAX_BLOCK_SIGOPS_COST: i64 = 80_000;
-/// Mainnet (bitcoin) pubkey address prefix.
-pub const PUBKEY_ADDRESS_PREFIX_MAIN: u8 = 0x38;
-/// Mainnet (bitcoin) script address prefix.
-pub const SCRIPT_ADDRESS_PREFIX_MAIN: u8 = 0x16;
-/// Test (tesnet, signet, regtest) pubkey address prefix.
-pub const PUBKEY_ADDRESS_PREFIX_TEST: u8 = 0x71;
-/// Test (tesnet, signet, regtest) script address prefix.
-pub const SCRIPT_ADDRESS_PREFIX_TEST: u8 = 0xc4;
+/// Mainnet (B1T) pubkey address prefix (25 = "B").
+pub const PUBKEY_ADDRESS_PREFIX_MAIN: u8 = 25;
+/// Mainnet (B1T) script address prefix.
+pub const SCRIPT_ADDRESS_PREFIX_MAIN: u8 = 22;
+/// Test (testnet, signet, regtest) pubkey address prefix (65 = "T", 61 = "R").
+pub const PUBKEY_ADDRESS_PREFIX_TEST: u8 = 65;
+/// Test (testnet, signet, regtest) script address prefix.
+pub const SCRIPT_ADDRESS_PREFIX_TEST: u8 = 196;
 /// The maximum allowed script size.
 pub const MAX_SCRIPT_ELEMENT_SIZE: usize = 520;
 /// How may blocks between halvings.
@@ -55,14 +55,14 @@ pub const SUBSIDY_HALVING_INTERVAL: u32 = 210_000;
 /// Maximum allowed value for an integer in Script.
 pub const MAX_SCRIPTNUM_VALUE: u32 = 0x80000000; // 2^31
 /// Number of blocks needed for an output from a coinbase transaction to be spendable.
-pub const COINBASE_MATURITY: u32 = 100;
+pub const COINBASE_MATURITY: u32 = 30;
 
 /// The maximum value allowed in an output (useful for sanity checking,
 /// since keeping everything below this value should prevent overflows
 /// if you are doing anything remotely sane with monetary values).
 pub const MAX_MONEY: u64 = 100_000_000 * COIN_VALUE;
 
-/// Constructs and returns the coinbase (and only) transaction of the pepecoin genesis block.
+/// Constructs and returns the coinbase (and only) transaction of the B1T genesis block.
 fn bitcoin_genesis_tx() -> Transaction {
     // Base
     let mut ret = Transaction {
@@ -89,7 +89,7 @@ fn bitcoin_genesis_tx() -> Transaction {
     let script_bytes = hex!("0436d04f40a76a1094ea10b14a513b62bfd0b47472dda1c25aa9cf8266e53f3c4353680146177f8a3b328ed2c6e02f2b8e051d9d5ffc61a4e6ccabd03409109a5a");
     let out_script =
         script::Builder::new().push_slice(script_bytes).push_opcode(OP_CHECKSIG).into_script();
-    ret.output.push(TxOut { value: 50 * COIN_VALUE, script_pubkey: out_script });
+    ret.output.push(TxOut { value: 5 * COIN_VALUE, script_pubkey: out_script });
 
     // end
     ret
@@ -101,14 +101,14 @@ pub fn genesis_block(network: Network) -> Block {
     let hash: sha256d::Hash = txdata[0].txid().into();
     let merkle_root = hash.into();
     match network {
-        Network::Pepecoin => Block {
+        Network::B1t => Block {
             header: block::Header {
                 version: block::Version::ONE,
                 prev_blockhash: Hash::all_zeros(),
                 merkle_root,
-                time: 1231006505,
-                bits: CompactTarget::from_consensus(0x1d00ffff),
-                nonce: 2083236893,
+                time: 1751109927,
+                bits: CompactTarget::from_consensus(0x1e0ffff0),
+                nonce: 411785,
                 auxpow: None,
             },
             txdata,
@@ -118,9 +118,9 @@ pub fn genesis_block(network: Network) -> Block {
                 version: block::Version::ONE,
                 prev_blockhash: Hash::all_zeros(),
                 merkle_root,
-                time: 1296688602,
-                bits: CompactTarget::from_consensus(0x1d00ffff),
-                nonce: 414098458,
+                time: 1751110035,
+                bits: CompactTarget::from_consensus(0x1e0ffff0),
+                nonce: 916278,
                 auxpow: None,
             },
             txdata,
@@ -142,9 +142,9 @@ pub fn genesis_block(network: Network) -> Block {
                 version: block::Version::ONE,
                 prev_blockhash: Hash::all_zeros(),
                 merkle_root,
-                time: 1296688602,
+                time: 1751110269,
                 bits: CompactTarget::from_consensus(0x207fffff),
-                nonce: 2,
+                nonce: 1,
                 auxpow: None,
             },
             txdata,
@@ -159,26 +159,26 @@ impl_array_newtype!(ChainHash, u8, 32);
 impl_bytes_newtype!(ChainHash, 32);
 
 impl ChainHash {
-    // Mainnet value can be verified at https://github.com/lightning/bolts/blob/master/00-introduction.md
-    /// `ChainHash` for mainnet bitcoin.
+    // Mainnet value from B1T genesis block (0x456ef94b5dd68b7a96438e3e2c551ddecd7b715cfe011228ac049a2482259862)
+    /// `ChainHash` for mainnet B1T.
     pub const BITCOIN: Self = Self([
-        111, 226, 140, 10, 182, 241, 179, 114, 193, 166, 162, 70, 174, 99, 247, 79, 147, 30, 131,
-        101, 225, 90, 8, 156, 104, 214, 25, 0, 0, 0, 0, 0,
+        0x62, 0x98, 0x25, 0x82, 0x24, 0x9a, 0x04, 0xac, 0x28, 0x12, 0x01, 0xfe, 0x5c, 0x71, 0x7b, 0xcd,
+        0xde, 0x1d, 0x55, 0x2c, 0x3e, 0x8e, 0x43, 0x96, 0x7a, 0x8b, 0xd6, 0x5d, 0x4b, 0xf9, 0x6e, 0x45,
     ]);
-    /// `ChainHash` for testnet bitcoin.
+    /// `ChainHash` for testnet B1T (0x77d7ae70739f71f60faba0622f8193770e886c33cb71c47f7d25e349b919c3ab).
     pub const TESTNET: Self = Self([
-        67, 73, 127, 215, 248, 38, 149, 113, 8, 244, 163, 15, 217, 206, 195, 174, 186, 121, 151,
-        32, 132, 233, 14, 173, 1, 234, 51, 9, 0, 0, 0, 0,
+        0xab, 0xc3, 0x19, 0xb9, 0x49, 0xe3, 0x25, 0x7d, 0x7f, 0xc4, 0x71, 0xcb, 0x33, 0x6c, 0x88, 0x0e,
+        0x77, 0x93, 0x81, 0xf8, 0x62, 0x06, 0xba, 0xfa, 0xf6, 0x71, 0x9f, 0x73, 0x70, 0xae, 0xd7, 0x77,
     ]);
-    /// `ChainHash` for signet bitcoin.
+    /// `ChainHash` for signet B1T.
     pub const SIGNET: Self = Self([
         246, 30, 238, 59, 99, 163, 128, 164, 119, 160, 99, 175, 50, 178, 187, 201, 124, 159, 249,
         240, 31, 44, 66, 37, 233, 115, 152, 129, 8, 0, 0, 0,
     ]);
-    /// `ChainHash` for regtest bitcoin.
+    /// `ChainHash` for regtest B1T (0xe4f25f6dbb9df3bc89b3d2ce22e58d1683203273e05e5e995efc5aec644c3b66).
     pub const REGTEST: Self = Self([
-        6, 34, 110, 70, 17, 26, 11, 89, 202, 175, 18, 96, 67, 235, 91, 191, 40, 195, 79, 58, 94,
-        51, 42, 31, 199, 178, 183, 60, 241, 136, 145, 15,
+        0x66, 0x3b, 0x4c, 0x64, 0xec, 0x5a, 0xfc, 0x5e, 0x99, 0x5e, 0x5e, 0xe0, 0x73, 0x32, 0x20, 0x68,
+        0x16, 0x8d, 0xe5, 0x22, 0xce, 0xd2, 0xb3, 0x89, 0xbc, 0xf3, 0x9d, 0xbb, 0x6d, 0x5f, 0xf2, 0xe4,
     ]);
 
     /// Returns the hash of the `network` genesis block for use as a chain hash.
@@ -225,7 +225,7 @@ mod test {
 
     #[test]
     fn bitcoin_genesis_full_block() {
-        let gen = genesis_block(Network::Pepecoin);
+        let gen = genesis_block(Network::B1t);
 
         assert_eq!(gen.header.version, block::Version::ONE);
         assert_eq!(gen.header.prev_blockhash, Hash::all_zeros());
@@ -297,7 +297,7 @@ mod test {
         assert_eq!(got, want);
 
         match network {
-            Network::Pepecoin => {}
+            Network::B1t => {}
             Network::Testnet => {}
             Network::Signet => {}
             Network::Regtest => {} // Update ChainHash::using_genesis_block and chain_hash_genesis_block with new variants.
@@ -316,17 +316,17 @@ mod test {
     }
 
     chain_hash_genesis_block! {
-        mainnet_chain_hash_genesis_block, Network::Pepecoin;
+        mainnet_chain_hash_genesis_block, Network::B1t;
         testnet_chain_hash_genesis_block, Network::Testnet;
         signet_chain_hash_genesis_block, Network::Signet;
         regtest_chain_hash_genesis_block, Network::Regtest;
     }
 
-    // Test vector taken from: https://github.com/lightning/bolts/blob/master/00-introduction.md
+    // Test vector for B1T mainnet genesis block hash
     #[test]
     fn mainnet_chain_hash_test_vector() {
-        let got = ChainHash::using_genesis_block(Network::Pepecoin).to_string();
-        let want = "6fe28c0ab6f1b372c1a6a246ae63f74f931e8365e15a089c68d6190000000000";
+        let got = ChainHash::using_genesis_block(Network::B1t).to_string();
+        let want = "62982582249a04ac281201fe5c717bcdde1d552c3e8e43967a8bd65d4bf96e45";
         assert_eq!(got, want);
     }
 }
