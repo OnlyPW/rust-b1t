@@ -1694,7 +1694,7 @@ mod tests {
 
     fn p2pkh_hex(pk: &str) -> ScriptBuf {
         let pk: PublicKey = PublicKey::from_str(pk).unwrap();
-        Address::p2pkh(&pk, Network::Pepecoin).script_pubkey()
+        Address::p2pkh(&pk, Network::B1t).script_pubkey()
     }
 
     #[test]

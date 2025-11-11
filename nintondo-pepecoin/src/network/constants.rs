@@ -20,10 +20,10 @@
 //! use nintondo_pepecoin::network::constants::Network;
 //! use nintondo_pepecoin::consensus::encode::serialize;
 //!
-//! let network = Network::Pepecoin;
+//! let network = Network::B1t;
 //! let bytes = serialize(&network.magic());
 //!
-//! assert_eq!(&bytes[..], &[0xF9, 0xBE, 0xB4, 0xD9]);
+//! assert_eq!(&bytes[..], &[0x46, 0x45, 0x31, 0x42]);
 //! ```
 
 use core::borrow::{Borrow, BorrowMut};
@@ -67,13 +67,13 @@ pub const PROTOCOL_VERSION: u32 = 70001;
 #[cfg_attr(feature = "serde", serde(rename_all = "lowercase"))]
 #[non_exhaustive]
 pub enum Network {
-    /// Mainnet pepecoin.
-    Pepecoin,
-    /// pepecoin's testnet network.
+    /// Mainnet B1T.
+    B1t,
+    /// B1T's testnet network.
     Testnet,
-    /// pepecoin's signet network.
+    /// B1T's signet network.
     Signet,
-    /// pepecoin's regtest network.
+    /// B1T's regtest network.
     Regtest,
 }
 
@@ -86,7 +86,7 @@ impl Network {
     /// use nintondo_pepecoin::network::constants::{Network, Magic};
     /// use std::convert::TryFrom;
     ///
-    /// assert_eq!(Ok(Network::Pepecoin), Network::try_from(Magic::from_bytes([0xF9, 0xBE, 0xB4, 0xD9])));
+    /// assert_eq!(Ok(Network::B1t), Network::try_from(Magic::from_bytes([0x46, 0x45, 0x31, 0x42])));
     /// assert_eq!(None, Network::from_magic(Magic::from_bytes([0xFF, 0xFF, 0xFF, 0xFF])));
     /// ```
     pub fn from_magic(magic: Magic) -> Option<Network> {
@@ -101,8 +101,8 @@ impl Network {
     /// ```rust
     /// use nintondo_pepecoin::network::constants::{Network, Magic};
     ///
-    /// let network = Network::Pepecoin;
-    /// assert_eq!(network.magic(), Magic::from_bytes([0xF9, 0xBE, 0xB4, 0xD9]));
+    /// let network = Network::B1t;
+    /// assert_eq!(network.magic(), Magic::from_bytes([0x46, 0x45, 0x31, 0x42]));
     /// ```
     pub fn magic(self) -> Magic {
         Magic::from(self)
@@ -119,7 +119,7 @@ impl Network {
     /// ```
     pub fn to_core_arg(self) -> &'static str {
         match self {
-            Network::Pepecoin => "main",
+            Network::B1t => "main",
             Network::Testnet => "test",
             Network::Signet => "signet",
             Network::Regtest => "regtest",
@@ -139,7 +139,7 @@ impl Network {
         use Network::*;
 
         let network = match core_arg {
-            "main" => Pepecoin,
+            "main" => B1t,
             "test" => Testnet,
             "signet" => Signet,
             "regtest" => Regtest,
@@ -156,7 +156,7 @@ impl Network {
     /// use nintondo_pepecoin::network::constants::Network;
     /// use nintondo_pepecoin::blockdata::constants::ChainHash;
     ///
-    /// let network = Network::Pepecoin;
+    /// let network = Network::B1t;
     /// assert_eq!(network.chain_hash(), ChainHash::BITCOIN);
     /// ```
     pub fn chain_hash(self) -> ChainHash {
@@ -172,7 +172,7 @@ impl Network {
     /// use nintondo_pepecoin::blockdata::constants::ChainHash;
     /// use std::convert::TryFrom;
     ///
-    /// assert_eq!(Ok(Network::Pepecoin), Network::try_from(ChainHash::BITCOIN));
+    /// assert_eq!(Ok(Network::B1t), Network::try_from(ChainHash::BITCOIN));
     /// ```
     pub fn from_chain_hash(chain_hash: ChainHash) -> Option<Network> {
         Network::try_from(chain_hash).ok()
@@ -198,7 +198,7 @@ impl FromStr for Network {
         use Network::*;
 
         let network = match s {
-            "pepecoin" => Pepecoin,
+            "b1t" => B1t,
             "testnet" => Testnet,
             "signet" => Signet,
             "regtest" => Regtest,
@@ -213,7 +213,7 @@ impl fmt::Display for Network {
         use Network::*;
 
         let s = match *self {
-            Pepecoin => "pepecoin",
+            B1t => "b1t",
             Testnet => "testnet",
             Signet => "signet",
             Regtest => "regtest",
@@ -240,7 +240,7 @@ impl TryFrom<ChainHash> for Network {
     fn try_from(chain_hash: ChainHash) -> Result<Self, Self::Error> {
         match chain_hash {
             // Note: any new network entries must be matched against here.
-            ChainHash::BITCOIN => Ok(Network::Pepecoin),
+            ChainHash::BITCOIN => Ok(Network::B1t),
             ChainHash::TESTNET => Ok(Network::Testnet),
             ChainHash::SIGNET => Ok(Network::Signet),
             ChainHash::REGTEST => Ok(Network::Regtest),
@@ -254,14 +254,14 @@ impl TryFrom<ChainHash> for Network {
 pub struct Magic([u8; 4]);
 
 impl Magic {
-    /// pepecoin mainnet network magic bytes.
-    pub const BITCOIN: Self = Self([0xC0, 0xA0, 0xF0, 0xE0]);
-    /// pepecoin testnet network magic bytes.
-    pub const TESTNET: Self = Self([0xFE, 0xC1, 0xDB, 0xCC]);
-    /// pepecoin signet network magic bytes.
+    /// B1T mainnet network magic bytes (0x42314546 = "B1TF").
+    pub const BITCOIN: Self = Self([0x46, 0x45, 0x31, 0x42]);
+    /// B1T testnet network magic bytes (0x03874423 = "8tB1").
+    pub const TESTNET: Self = Self([0x23, 0x44, 0x87, 0x03]);
+    /// B1T signet network magic bytes.
     pub const SIGNET: Self = Self([0xFC, 0xC1, 0xB7, 0xDC]);
-    /// pepecoin regtest network magic bytes.
-    pub const REGTEST: Self = Self([0xFA, 0xBF, 0xB5, 0xDA]);
+    /// B1T regtest network magic bytes (0x52454742 = "REGB").
+    pub const REGTEST: Self = Self([0x42, 0x47, 0x45, 0x52]);
 
     /// Create network magic from bytes.
     pub fn from_bytes(bytes: [u8; 4]) -> Magic {
@@ -298,7 +298,7 @@ impl From<Network> for Magic {
     fn from(network: Network) -> Magic {
         match network {
             // Note: new network entries must explicitly be matched in `try_from` below.
-            Network::Pepecoin => Magic::BITCOIN,
+            Network::B1t => Magic::BITCOIN,
             Network::Testnet => Magic::TESTNET,
             Network::Signet => Magic::SIGNET,
             Network::Regtest => Magic::REGTEST,
@@ -316,7 +316,7 @@ impl TryFrom<Magic> for Network {
     fn try_from(magic: Magic) -> Result<Self, Self::Error> {
         match magic {
             // Note: any new network entries must be matched against here.
-            Magic::BITCOIN => Ok(Network::Pepecoin),
+            Magic::BITCOIN => Ok(Network::B1t),
             Magic::TESTNET => Ok(Network::Testnet),
             Magic::SIGNET => Ok(Network::Signet),
             Magic::REGTEST => Ok(Network::Regtest),
@@ -599,25 +599,25 @@ mod tests {
 
     #[test]
     fn serialize_test() {
-        assert_eq!(serialize(&Network::Pepecoin.magic()), &[0xf9, 0xbe, 0xb4, 0xd9]);
-        assert_eq!(serialize(&Network::Testnet.magic()), &[0x0b, 0x11, 0x09, 0x07]);
-        assert_eq!(serialize(&Network::Signet.magic()), &[0x0a, 0x03, 0xcf, 0x40]);
-        assert_eq!(serialize(&Network::Regtest.magic()), &[0xfa, 0xbf, 0xb5, 0xda]);
+        assert_eq!(serialize(&Network::B1t.magic()), &[0x46, 0x45, 0x31, 0x42]);
+        assert_eq!(serialize(&Network::Testnet.magic()), &[0x23, 0x44, 0x87, 0x03]);
+        assert_eq!(serialize(&Network::Signet.magic()), &[0xfc, 0xc1, 0xb7, 0xdc]);
+        assert_eq!(serialize(&Network::Regtest.magic()), &[0x42, 0x47, 0x45, 0x52]);
 
-        assert_eq!(deserialize(&[0xf9, 0xbe, 0xb4, 0xd9]).ok(), Some(Network::Pepecoin.magic()));
-        assert_eq!(deserialize(&[0x0b, 0x11, 0x09, 0x07]).ok(), Some(Network::Testnet.magic()));
-        assert_eq!(deserialize(&[0x0a, 0x03, 0xcf, 0x40]).ok(), Some(Network::Signet.magic()));
-        assert_eq!(deserialize(&[0xfa, 0xbf, 0xb5, 0xda]).ok(), Some(Network::Regtest.magic()));
+        assert_eq!(deserialize(&[0x46, 0x45, 0x31, 0x42]).ok(), Some(Network::B1t.magic()));
+        assert_eq!(deserialize(&[0x23, 0x44, 0x87, 0x03]).ok(), Some(Network::Testnet.magic()));
+        assert_eq!(deserialize(&[0xfc, 0xc1, 0xb7, 0xdc]).ok(), Some(Network::Signet.magic()));
+        assert_eq!(deserialize(&[0x42, 0x47, 0x45, 0x52]).ok(), Some(Network::Regtest.magic()));
     }
 
     #[test]
     fn string_test() {
-        assert_eq!(Network::Pepecoin.to_string(), "bitcoin");
+        assert_eq!(Network::B1t.to_string(), "b1t");
         assert_eq!(Network::Testnet.to_string(), "testnet");
         assert_eq!(Network::Regtest.to_string(), "regtest");
         assert_eq!(Network::Signet.to_string(), "signet");
 
-        assert_eq!("bitcoin".parse::<Network>().unwrap(), Network::Pepecoin);
+        assert_eq!("b1t".parse::<Network>().unwrap(), Network::B1t);
         assert_eq!("testnet".parse::<Network>().unwrap(), Network::Testnet);
         assert_eq!("regtest".parse::<Network>().unwrap(), Network::Regtest);
         assert_eq!("signet".parse::<Network>().unwrap(), Network::Signet);
@@ -690,10 +690,10 @@ mod tests {
     #[test]
     fn magic_from_str() {
         let known_network_magic_strs = [
-            ("f9beb4d9", Network::Pepecoin),
-            ("0b110907", Network::Testnet),
-            ("fabfb5da", Network::Regtest),
-            ("0a03cf40", Network::Signet),
+            ("46453142", Network::B1t),
+            ("23448703", Network::Testnet),
+            ("42474552", Network::Regtest),
+            ("fcc1b7dc", Network::Signet),
         ];
 
         for (magic_str, network) in &known_network_magic_strs {
@@ -706,7 +706,7 @@ mod tests {
     #[test]
     fn from_to_core_arg() {
         let expected_pairs = [
-            (Network::Pepecoin, "main"),
+            (Network::B1t, "main"),
             (Network::Testnet, "test"),
             (Network::Regtest, "regtest"),
             (Network::Signet, "signet"),

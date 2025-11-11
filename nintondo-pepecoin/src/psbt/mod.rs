@@ -838,7 +838,7 @@ mod tests {
     use crate::blockdata::script::ScriptBuf;
     use crate::blockdata::transaction::{OutPoint, Sequence, Transaction, TxIn, TxOut};
     use crate::internal_macros::hex;
-    use crate::network::constants::Network::Pepecoin;
+    use crate::network::constants::Network::B1t;
     use crate::psbt::map::{Input, Output};
     use crate::psbt::raw;
 
