@@ -1,0 +1,5 @@
+[workspace]
+members = ["nintondo-pepecoin", "hashes", "internals"]
+
+[patch.crates-io.bitcoin_hashes]
+path = "hashes"
